@@ -20,16 +20,15 @@ public interface PatientRepository extends JpaRepository<Patient , Long> {
     Patient findByName(String name);
     List<Patient> findByBirthdateOrEmail(LocalDate birthdate, String email);
     List<Patient> findByNameContainingOrderByNameDesc(String name);
-    @Query("SELECT p FROM Patient p where p.bloodgroup = ?1")
+    @Query("SELECT p FROM Patient p where p.bloodGroup = ?1")
     List<Patient> findByBloodGroup(@Param("bloodgroup") BloodGroupType blooodgroup);
 
 
     @Query("select p from Patient p where p.birthdate > :birthdate")
     List<Patient> findByBornAfterDate(@Param("birthdate") LocalDate birthDate);
 
-    @Query("select new com.ex.hospitalManagement.dto.BloodGroupCountResponseEntity(p.bloodgroup," +
-            " Count(p)) from Patient p group by p.bloodgroup")
-    List<BloodGroupCountResponseEntity> countEachBloodGroupType();
+//    @Query("select new com.ex.hospitalManagement.dto.BloodGroupCountResponseEntity(p.bloodGroup, count(p)) from Patient p group by p.bloodGroup")
+//    List<BloodGroupCountResponseEntity> countEachBloodGroupType();
 
     @Query(value = "select * from patient" , nativeQuery = true)
     Page<Patient> findAllPatients(Pageable pageable);
@@ -38,5 +37,9 @@ public interface PatientRepository extends JpaRepository<Patient , Long> {
     @Modifying
     @Query("UPDATE Patient p SET p.name = :name where p.id = :id")
     int updateNameWithId(@Param("name") String name , @Param("id") Long id);
+
+//    @Query("SELECT p FROM Patient p LEFT JOIN FETCH p.appointments a LEFT JOIN FETCH a.doctor")
+    @Query("SELECT p FROM Patient p LEFT JOIN FETCH p.appointments")
+    List<Patient> findAllPatientWithAppointment();
 
 }

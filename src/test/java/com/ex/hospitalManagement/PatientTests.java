@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest
-public class PatientTests {
+public class  PatientTests {
     @Autowired
     private  PatientRepository patientRepository;
 
@@ -25,7 +25,7 @@ public class PatientTests {
 
     @Test
     public void testPatientRepository() {
-        List<Patient> patientList = patientRepository.findAll();
+        List<Patient> patientList = patientRepository.findAllPatientWithAppointment();
         System.out.println(patientList);
     }
 
@@ -34,14 +34,14 @@ public class PatientTests {
 //        Patient patient = patientRepository.findByName("Diya Patel");
 //        List<Patient> patientList = patientRepository.findByBirthdateOrEmail(LocalDate.of(1993,7,11), "diya.patel@example.com");
 
-//        List<Patient> patientList = patientRepository.findByNameContainingOrderByNameDesc("Di");
-//        List<Patient> patientList = patientRepository.findByBloodGroup(BloodGroupType.A_POSITIVE);
+        List<Patient> patientList = patientRepository.findByNameContainingOrderByNameDesc("Di");
+//        List<Patient> patientList1 = patientRepository.findByBloodGroup(BloodGroupType.A_POSITIVE);
 //        List<Patient> patientList = patientRepository.findByBornAfterDate(LocalDate.of(1990,3,15));
-        Page<Patient> patientList = patientRepository.findAllPatients(PageRequest.of(0,3, Sort.by("name")));
+//        Page<Patient> patientList = patientRepository.findAllPatients(PageRequest.of(0,3, Sort.by("name")));
         for(Patient patient: patientList) {
         System.out.println(patient);
         }
-//
+////
 //        List<Object[]> bloodGroupList = patientRepository.countEachBloodGroupType();
 //        for(Object[] objects: bloodGroupList) {
 //            System.out.println(objects[0] +" "+objects[1]);
