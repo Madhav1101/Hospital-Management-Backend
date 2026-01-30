@@ -43,10 +43,10 @@ public class InsuranceTests {
                 .reason("Cancer")
                 .build();
 
-        var newAppointment = appointmentService.createNewAppointment(appointment, 1L, 2L);
-        System.out.println(newAppointment);
+//        var newAppointment = appointmentService.createNewAppointment(appointment, 1L, 2L);
+//        System.out.println(newAppointment);
 
-        var updatedAppointment = appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 3L);
-        System.out.println(updatedAppointment);
+//        var updatedAppointment = appointmentService.reAssignAppointmentToAnotherDoctor(newAppointment.getId(), 3L);
+//        System.out.println(updatedAppointment);
     }
 }

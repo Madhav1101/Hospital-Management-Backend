@@ -1,6 +1,5 @@
 package com.ex.hospitalManagement.repository;
 
-import com.ex.hospitalManagement.dto.BloodGroupCountResponseEntity;
 import com.ex.hospitalManagement.entity.Patient;
 import com.ex.hospitalManagement.entity.type.BloodGroupType;
 import jakarta.transaction.Transactional;
