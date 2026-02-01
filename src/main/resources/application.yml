@@ -5,5 +5,5 @@ spring:
         client-id: ENTER_YOUR_OAUTH_PROVIDER_CLIENT_ID
         client-secret: ENTER_YOUR_OAUTH_PROVIDER_CLIENT_KEY
       github:
-        client-id:  ENTER_YOUR_OAUTH_PROVIDER_CLIENT_ID
-        client-secret: ENTER_YOUR_OAUTH_PROVIDER_CLIENT_KEY
+          client-id: ENTER_YOUR_OAUTH_PROVIDER_CLIENT_ID
+          client-secret: ENTER_YOUR_OAUTH_PROVIDER_CLIENT_KEY

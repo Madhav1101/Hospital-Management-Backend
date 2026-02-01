@@ -2,9 +2,13 @@ package com.ex.hospitalManagement.security;
 
 import com.ex.hospitalManagement.dto.LoginRequestDto;
 import com.ex.hospitalManagement.dto.LoginResponseDto;
+import com.ex.hospitalManagement.dto.SignUpRequestDto;
 import com.ex.hospitalManagement.dto.SignupResponseDto;
+import com.ex.hospitalManagement.entity.Patient;
 import com.ex.hospitalManagement.entity.User;
 import com.ex.hospitalManagement.entity.type.AuthProviderType;
+import com.ex.hospitalManagement.entity.type.RoleType;
+import com.ex.hospitalManagement.repository.PatientRepository;
 import com.ex.hospitalManagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -24,6 +30,7 @@ public class AuthService {
     private final AuthUtil authUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PatientRepository patientRepository;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -36,7 +43,7 @@ public class AuthService {
         return new LoginResponseDto(token , user.getId());
     }
 
-    public User signUpInternal(LoginRequestDto signupRequestDto , AuthProviderType providerType , String providerId) {
+    public User signUpInternal(SignUpRequestDto signupRequestDto , AuthProviderType providerType , String providerId) {
         User user = userRepository.findByUsername(signupRequestDto.getUsername()).orElse(null);
         if (user!=null) throw new IllegalArgumentException("User already exists");
 
@@ -44,15 +51,27 @@ public class AuthService {
                 .username(signupRequestDto.getUsername())
                 .providerId(providerId)
                 .providerType(providerType)
+                .roles(signupRequestDto.getRoles())
                 .build();
 
         if(providerType == AuthProviderType.EMAIL) {
             user.setPassword(passwordEncoder.encode(signupRequestDto.getPassword()));
         }
-        return userRepository.save(user);
+
+        user = userRepository.save(user);
+
+        Patient patient = Patient.builder()
+                .name(signupRequestDto.getName())
+                .email(signupRequestDto.getUsername())
+                .user(user)
+                .build();
+
+        patientRepository.save(patient);
+
+        return user;
     }
 
-    public SignupResponseDto signup(LoginRequestDto signupRequestDto) {
+    public SignupResponseDto signup(SignUpRequestDto signupRequestDto) {
         User user = signUpInternal(signupRequestDto, AuthProviderType.EMAIL, null);
         return new SignupResponseDto(user.getId() , user.getUsername());
     }
@@ -64,12 +83,13 @@ public class AuthService {
 
         User user = userRepository.findByProviderIdAndProviderType(providerId , authProviderType).orElse(null);
         String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
 
         User emailUser = userRepository.findByUsername(email).orElse(null);
 
         if (user == null && emailUser == null) {
             String username = authUtil.determineUsernameFromOAuth2User(oAuth2User , registrationId, providerId);
-            user = signUpInternal(new LoginRequestDto(username , null) , authProviderType , providerId);
+            user = signUpInternal(new SignUpRequestDto(username , null , name , Set.of(RoleType.PATIENT)) , authProviderType , providerId);
         } else if(user !=null) {
             if(email !=null && !email.isBlank() && !email.equals(user.getUsername())) {
                 user.setUsername(email);
